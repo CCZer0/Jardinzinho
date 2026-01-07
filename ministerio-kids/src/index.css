@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Estilo para impressão da etiqueta */
+@media print {
+  body * { visibility: hidden; }
+  nav { display: none !important; }
+  #area-etiqueta, #area-etiqueta * { visibility: visible; }
+  #area-etiqueta {
+    position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 10px;
+  }
+}
