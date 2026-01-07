@@ -1,6 +1,6 @@
 // src/firebaseConfig.js
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore"; // <--- FALTAVA ISSO AQUI
+import { getFirestore } from "firebase/firestore"; // <--- ESTA LINHA FALTAVA!
 
 const firebaseConfig = {
   apiKey: "AIzaSyBlgEnc74cJ0zQYbwUgd1qjqJTRluT95cI",
@@ -12,5 +12,8 @@ const firebaseConfig = {
   measurementId: "G-92Q1ZT7QXZ"
 };
 
+// Inicializa o Firebase
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app); // <--- Isso exporta o banco para o resto do app
+
+// Exporta o Banco de Dados
+export const db = getFirestore(app);

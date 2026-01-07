@@ -3,7 +3,7 @@ import { cadastrarCrianca } from '../services/attendanceService';
 
 const CadastroScreen = () => {
   const [formData, setFormData] = useState({ nome: '', dataNascimento: '', alergias: '', responsavel: '', telefone: '' });
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.nome || !formData.responsavel) return alert("Preencha os nomes!");
