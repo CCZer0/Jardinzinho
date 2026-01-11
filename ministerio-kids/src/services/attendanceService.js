@@ -59,4 +59,41 @@ export const cadastrarCrianca = async (dados) => {
     console.error("Erro ao cadastrar:", error);
     return { sucesso: false, erro: error };
   }
+
+// ... (mantenha os imports e funções anteriores)
+
+import { updateDoc, doc, orderBy } from "firebase/firestore"; // Adicione updateDoc, doc e orderBy aqui no topo!
+
+// 4. Listar Crianças Presentes (Para o Checkout)
+export const listarPresentes = async () => {
+  try {
+    const q = query(
+      collection(db, "checkins"),
+      where("status", "==", "presente")
+      // Se quiser ordenar por horário, precisaria criar um índice no Firebase, 
+      // mas por enquanto vamos deixar simples para não travar.
+    );
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id_checkin: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error("Erro ao listar presentes:", error);
+    return [];
+  }
+};
+
+// 5. Realizar Checkout (Liberar Criança)
+export const realizarCheckOut = async (idCheckIn) => {
+  try {
+    const checkInRef = doc(db, "checkins", idCheckIn);
+    await updateDoc(checkInRef, {
+      status: "entregue",
+      horario_saida: Timestamp.now()
+    });
+    return { sucesso: true };
+  } catch (error) {
+    console.error("Erro ao fazer checkout:", error);
+    return { sucesso: false };
+  }
+};
+
 };
