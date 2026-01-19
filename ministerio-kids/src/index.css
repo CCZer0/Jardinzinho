@@ -4,72 +4,40 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 1. CONFIGURAÇÃO DA FONTE E FUNDO */
+/* CONFIGURAÇÃO DO CORPO */
 body {
   margin: 20px;
+  padding: 0;
   min-height: 100vh;
-  /* Gradiente Oliva Suave */
-  background: linear-gradient(180deg, #626827 0%, #aab074 40%, #f4f5e6 100%);
+  /* Gradiente Verde Oliva Suave */
+  background: linear-gradient(180deg, #626827 0%, #aeb578 60%, #f1f2e6 100%);
   background-attachment: fixed;
-  /* Aplicando a fonte Poppins */
   font-family: 'Poppins', sans-serif;
   color: #333;
+  -webkit-font-smoothing: antialiased;
 }
-
-#root {
-  width: 100%;
-  height: 100%;
-}
-
-/* 2. ESTILO DOS BOTÕES (Aqui é onde você edita!) */
-/* Em src/index.css */
 
 @layer components {
+  /* --- BOTÃO PADRÃO (Verde) --- */
   .btn-padrao {
-    @apply w-full text-white font-bold py-3 px-4 rounded-xl shadow-lg transform transition-all duration-200;
-    
-    /* Configuração da Cor */
-    background-color: #626827; 
-    border: 2px solid #4a4f1e;
-    
-    /* --- CORREÇÃO DO "SEMPRE SELECIONADO" --- */
-    outline: none !important;      /* Remove a linha de contorno */
+    @apply w-full font-bold py-3 px-6 rounded-2xl shadow-lg transition-all duration-200 flex justify-center items-center cursor-pointer;
+    background-color: #626827;
+    color: white;
+    border: none;
   }
-
-  /* Estado quando passa o mouse (Hover) */
   .btn-padrao:hover {
-    @apply brightness-110 shadow-xl -translate-y-1; /* Sobe um pouquinho */
+    @apply opacity-90 -translate-y-1 shadow-xl;
   }
-
-  /* Estado quando clica/segura (Active) */
   .btn-padrao:active {
-    @apply scale-95 brightness-90; /* Diminui um pouco ao clicar */
-    outline: none !important; /* Garante que não apareça borda ao clicar */
+    @apply scale-95 opacity-100;
   }
 
-  /* Estado de Foco (quando solta o clique) */
-  .btn-padrao:focus {
-    outline: none !important; /* Remove a borda azul/preta do navegador */
-    --tw-ring-color: transparent; /* Remove o anel do Tailwind se houver */
+  /* --- INPUTS (Caixas de Texto) --- */
+  .input-padrao {
+    @apply w-full p-3 text-gray-700 bg-white rounded-xl border-2 border-gray-200 outline-none transition-all shadow-sm;
   }
-
-  /* Botão de Perigo (Vermelho) com a mesma correção */
-  .btn-perigo {
-    @apply text-white font-bold py-2 px-4 rounded-xl shadow-md transform transition-all duration-200;
-    background-color: #ef4444;
-    border: 2px solid #b91c1c;
-    outline: none !important;
-  }
-  .btn-perigo:focus { outline: none !important; }
-}
-
-/* Estilo de Impressão (Mantenha isso) */
-@media print {
-  body { background: white; }
-  body * { visibility: hidden; }
-  nav { display: none !important; }
-  #area-etiqueta, #area-etiqueta * { visibility: visible; }
-  #area-etiqueta {
-    position: absolute; left: 0; top: 0; width: 100%; margin: 0;
+  .input-padrao:focus {
+    border-color: #626827;
+    box-shadow: 0 0 0 4px rgba(98, 104, 39, 0.2);
   }
 }
