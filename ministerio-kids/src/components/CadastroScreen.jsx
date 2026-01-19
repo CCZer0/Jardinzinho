@@ -16,12 +16,12 @@ const CadastroScreen = () => {
 
   return (
     <div className="p-4 max-w-md mx-auto bg-white min-h-screen pb-24">
-      <h2 className="text-2xl font-bold mb-6 text-purple-700">Novo Cadastro</h2>
+      <h2 className="text-2xl font-bold mb-6 text-purple-700 rounded-full">Novo Cadastro</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input name="nome" value={formData.nome} onChange={(e) => setFormData({...formData, nome: e.target.value})} className="w-full p-3 border rounded-lg" placeholder="Nome da Criança" />
         <input name="alergias" value={formData.alergias} onChange={(e) => setFormData({...formData, alergias: e.target.value})} className="w-full p-3 border border-red-200 bg-red-50 rounded-lg" placeholder="Alergias?" />
         <input name="responsavel" value={formData.responsavel} onChange={(e) => setFormData({...formData, responsavel: e.target.value})} className="w-full p-3 border rounded-lg" placeholder="Nome do Responsável" />
-        <button type="submit" className="w-full py-4 bg-purple-600 text-white rounded-lg font-bold">Salvar Cadastro</button>
+        <button type="submit" className="btn-padrao">Salvar Cadastro</button>
       </form>
     </div>
   );

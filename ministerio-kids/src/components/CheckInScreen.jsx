@@ -39,7 +39,7 @@ const CheckInScreen = () => {
 
   return (
     <div className="p-4 max-w-md mx-auto">
-      <h1 className="text-2xl font-bold mb-4 text-center text-blue-800">Check-in Kids</h1>
+      <h1 className="text-2xl font-bold mb-4 text-center text-blue-00">Check-in Kids</h1>
 
       {/* Área de Sucesso (Etiqueta Virtual) */}
       {checkInRealizado && (
@@ -52,7 +52,7 @@ const CheckInScreen = () => {
           </div>
           <button
             onClick={() => setCheckInRealizado(null)}
-            className="w-full mt-4 bg-green-600 text-white py-2 rounded"
+            className="w-full mt-4 bg-green-600 text-white py-2 rounded rounded-full"
           >
             Novo Check-in
           </button>
@@ -70,7 +70,7 @@ const CheckInScreen = () => {
         />
         <button
           type="submit"
-          className="w-full mt-2 bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700"
+          className="btn-padrao mt-4"
         >
           {loading ? 'Buscando...' : 'Buscar'}
         </button>

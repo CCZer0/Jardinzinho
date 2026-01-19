@@ -1,5 +1,18 @@
+// src/services/attendanceService.js
 import { db } from "../firebaseConfig";
-import { collection, addDoc, query, where, getDocs, Timestamp } from "firebase/firestore";
+import { 
+  collection, 
+  addDoc, 
+  query, 
+  where, 
+  getDocs, 
+  Timestamp, 
+  updateDoc, 
+  doc, 
+  orderBy 
+} from "firebase/firestore";
+
+// --- Funções Auxiliares ---
 
 // Gerar código (ex: A45)
 const gerarCodigoSeguranca = () => {
@@ -7,7 +20,9 @@ const gerarCodigoSeguranca = () => {
   return `${letras.charAt(Math.floor(Math.random() * letras.length))}${Math.floor(Math.random() * 90 + 10)}`;
 };
 
-// 1. Buscar Criança
+// --- Funções Principais ---
+
+// 1. Buscar Criança (Para o Check-in)
 export const buscarCrianca = async (nomeBusca) => {
   try {
     const q = query(
@@ -23,14 +38,15 @@ export const buscarCrianca = async (nomeBusca) => {
   }
 };
 
-// 2. Check-in
+// 2. Realizar Check-in (Entrada)
 export const realizarCheckIn = async (crianca) => {
   try {
     const codigo = gerarCodigoSeguranca();
+    // AQUI ESTAVA O ERRO (A barra invertida foi removida)
     const docRef = await addDoc(collection(db, "checkins"), {
       id_crianca: crianca.id,
       nome_crianca: crianca.nome,
-      responsavel_nome: crianca.nome_responsavel,
+      responsavel_nome: crianca.nome_responsavel || crianca.responsavel || "Não informado",
       horario_entrada: Timestamp.now(),
       status: "presente",
       codigo_seguranca: codigo,
@@ -43,35 +59,29 @@ export const realizarCheckIn = async (crianca) => {
   }
 };
 
-// 3. Cadastrar
+// 3. Cadastrar Nova Criança
 export const cadastrarCrianca = async (dados) => {
   try {
     const docRef = await addDoc(collection(db, "criancas"), {
       nome: dados.nome.trim(),
-      data_nascimento: dados.dataNascimento,
-      alergias: dados.alergias?.trim() || "Nenhuma",
-      nome_responsavel: dados.responsavel.trim(),
-      contato_responsavel: dados.telefone.trim(),
-      data_cadastro: Timestamp.now()
+      data_nascimento: dados.dataNascimento || "",
+      alergias: dados.alergias || "",
+      nome_responsavel: dados.responsavel,
+      telefone_responsavel: dados.telefone || ""
     });
     return { sucesso: true, id: docRef.id };
   } catch (error) {
     console.error("Erro ao cadastrar:", error);
-    return { sucesso: false, erro: error };
+    return { sucesso: false };
   }
+};
 
-// ... (mantenha os imports e funções anteriores)
-
-import { updateDoc, doc, orderBy } from "firebase/firestore"; // Adicione updateDoc, doc e orderBy aqui no topo!
-
-// 4. Listar Crianças Presentes (Para o Checkout)
+// 4. Listar Crianças Presentes (Para o Checkout - Tela "Em Sala")
 export const listarPresentes = async () => {
   try {
     const q = query(
       collection(db, "checkins"),
       where("status", "==", "presente")
-      // Se quiser ordenar por horário, precisaria criar um índice no Firebase, 
-      // mas por enquanto vamos deixar simples para não travar.
     );
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id_checkin: doc.id, ...doc.data() }));
@@ -94,6 +104,4 @@ export const realizarCheckOut = async (idCheckIn) => {
     console.error("Erro ao fazer checkout:", error);
     return { sucesso: false };
   }
-};
-
 };
