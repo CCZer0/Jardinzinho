@@ -41,3 +41,15 @@ body {
     box-shadow: 0 0 0 4px rgba(98, 104, 39, 0.2);
   }
 }
+
+@layer utilities {
+  /* Esconde no Chrome, Safari e Opera */
+  .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+  }
+  /* Esconde no IE, Edge e Firefox */
+  .scrollbar-hide {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+  }
+}

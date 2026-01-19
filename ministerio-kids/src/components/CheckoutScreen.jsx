@@ -1,26 +1,44 @@
 import React, { useEffect, useState } from 'react';
-import { listarPresentes, realizarCheckOut } from '../services/attendanceService';
+import { db } from '../firebaseConfig'; // Importa o banco
+import { collection, deleteDoc, doc, onSnapshot, query, orderBy } from 'firebase/firestore'; 
 
 const CheckoutScreen = () => {
   const [criancas, setCriancas] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const carregarLista = async () => {
-    setLoading(true);
-    const lista = await listarPresentes();
-    setCriancas(lista);
-    setLoading(false);
-  };
-
+  // --- 1. BUSCAR DADOS EM TEMPO REAL ---
   useEffect(() => {
-    carregarLista();
+    // Cria uma query ordenando pela data de entrada (mais recentes primeiro)
+    const q = query(collection(db, "checkins"), orderBy("data", "desc"));
+
+    // onSnapshot fica "escutando" o banco. Qualquer mudança, ele roda esse código:
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const lista = snapshot.docs.map(doc => ({
+        id: doc.id, // O ID do documento (importante para apagar depois)
+        ...doc.data()
+      }));
+
+      setCriancas(lista);
+      setLoading(false);
+    }, (error) => {
+      console.error("Erro ao buscar checkins:", error);
+      setLoading(false);
+    });
+
+    // Limpa o ouvinte quando sair da tela
+    return () => unsubscribe();
   }, []);
 
+  // --- 2. FUNÇÃO DE LIBERAR (DELETAR O CHECK-IN) ---
   const handleLiberar = async (crianca) => {
-    if (window.confirm(`Entregar ${crianca.nome_crianca} ao responsável?`)) {
-      const res = await realizarCheckOut(crianca.id_checkin);
-      if (res.sucesso) {
-        carregarLista();
+    if (window.confirm(`Entregar ${crianca.nome} ao responsável?`)) {
+      try {
+        // Remove o documento da coleção "checkins"
+        await deleteDoc(doc(db, "checkins", crianca.id));
+        // Não precisa chamar carregarLista() aqui, o onSnapshot atualiza a tela sozinho!
+      } catch (error) {
+        console.error("Erro ao dar saída:", error);
+        alert("Erro ao realizar saída.");
       }
     }
   };
@@ -48,32 +66,35 @@ const CheckoutScreen = () => {
         <div className="space-y-4">
           {criancas.map((item) => (
             // CARD ESTILIZADO
-            <div key={item.id_checkin} className="bg-white border-2 border-blue-100 shadow-[0_4px_10px_rgba(0,0,0,0.05)] rounded-2xl p-4 flex items-center relative overflow-hidden transition-transform transform hover:scale-[1.02]">
-              
+            <div key={item.id} className="bg-white border-2 border-blue-100 shadow-[0_4px_10px_rgba(0,0,0,0.05)] rounded-2xl p-4 flex items-center relative overflow-hidden transition-transform transform hover:scale-[1.02]">
+
               {/* Avatar Automático com as Iniciais */}
-              <img 
-                src={`https://ui-avatars.com/api/?name=${item.nome_crianca}&background=random&color=fff&rounded=true&bold=true`} 
-                alt="Avatar" 
+              <img
+                src={`https://ui-avatars.com/api/?name=${item.nome}&background=random&color=fff&rounded=true&bold=true`} 
+                alt="Avatar"
                 className="w-12 h-12 mr-4 shadow-sm"
               />
 
               {/* Detalhes */}
               <div className="flex-1">
-                <h3 className="font-bold text-lg text-gray-800 leading-tight">{item.nome_crianca}</h3>
-                <p className="text-xs text-gray-400 uppercase mt-1">Responsável</p>
-                <p className="text-sm text-gray-600 font-medium">{item.responsavel_nome}</p>
+                <h3 className="font-bold text-lg text-gray-800 leading-tight">{item.nome}</h3>
+
+                {/* Nota: Se você não salvou o responsável no CheckInScreen anterior, este campo pode vir vazio.
+                    Sugestão: Adicione 'responsavel' ao salvar no CheckInScreen se quiser que apareça aqui. */}
+                <p className="text-xs text-gray-400 uppercase mt-1">Turma</p>
+                <p className="text-sm text-gray-600 font-medium">{item.turma || "Não informado"}</p>
               </div>
 
               {/* Código e Botão */}
               <div className="flex flex-col items-end gap-2 pl-2 border-l border-dashed border-gray-200">
                 <div className="bg-blue-50 px-3 py-1 rounded-lg border border-blue-100 text-center w-full">
-                   <p className="text-[10px] text-blue-400 font-bold">CÓDIGO</p>
-                   <p className="text-xl font-black text-blue-600 tracking-wider">{item.codigo_seguranca}</p>
+                  <p className="text-[10px] text-blue-400 font-bold">CÓDIGO</p>
+                  <p className="text-xl font-black text-blue-600 tracking-wider">{item.codigo}</p>
                 </div>
-                
-                <button 
+
+                <button
                   onClick={() => handleLiberar(item)}
-                  className="btn-perigo text-xs w-full"
+                  className="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-bold py-2 px-4 rounded-lg w-full transition-colors"
                 >
                   SAÍDA
                 </button>
