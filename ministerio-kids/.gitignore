@@ -22,3 +22,14 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Segurança e Variáveis de Ambiente
+.env
+.env.*
+!.env.example
+
+# Arquivos locais do Firebase
+.firebase/
+.firebaserc
+firebase-debug.log*
+firebase-debug.env*
